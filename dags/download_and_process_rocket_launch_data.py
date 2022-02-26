@@ -1,6 +1,6 @@
 import json
 import pathlib
-import requests.get as requests_get
+import requests
 import requests.exceptions as requests_exceptions
 import airflow.utils.dates as airflow_utils_dates
 import airflow.DAG as DAG
@@ -32,7 +32,7 @@ def _get_pictures():
         for image_url in image_urls:
             try:
                 # Download each image
-                response = requests_get(image_url)
+                response = requests.get(image_url)
                 image_filename = image_url.split("/")[-1]
                 target_file = f"/tmp/images/{image_filename}"
                 # Store each image
