@@ -1,5 +1,0 @@
-click==8.0.4
-faker==13.3.0
-flask==2.0.3
-pandas==1.4.1
-pendulum

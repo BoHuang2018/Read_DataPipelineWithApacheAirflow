@@ -3,13 +3,13 @@ from airflow import DAG
 from airflow.operators.bash import BashOperator
 
 dag_bash = DAG(
-    dag_id="chapter04_stock_sense_bash_operator",
+    dag_id="stock_sense_bash_operator",
     start_date=airflow.utils.dates.days_ago(3),
     schedule_interval="@hourly",
 )
 
-get_data = BashOperator(
-    task_id="get_data",
+get_data_bash = BashOperator(
+    task_id="get_stock_data",
     bash_command=(  # for example: https://dump.wikimedia.org/other/pageviews/2019/2019-07/pageviews-20190701-010000.gz
         "curl -o /tmp/wikipageviews.gz "
         "https://dump.wikimedia.org/other/pageviews/{{ execution_date.year }}/"  # like: .../other/pageviews/2019/              
