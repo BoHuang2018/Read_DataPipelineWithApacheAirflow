@@ -1,7 +1,7 @@
 # """
 # Documentation of pageview format: https://wikitech.wikimedia.org/wiki/Analytics/Data_Lake/Traffic/Pageviews
 # """
-
+import logging
 from urllib import request
 
 import airflow
@@ -21,9 +21,10 @@ stock_sensor_dag = DAG(
 
 def _get_data(year, month, day, hour, output_path):
     url = (
-        "https://dump.wikimedia.org/other/pageviews/"
+        "https://dumps.wikimedia.org/other/pageviews/"
         f"{year}/{year}-{month:0>2}/pageviews-{year}{month:0>2}{day:0>2}-{hour:0>2}0000.gz"
     )
+    logging.warning("Getting Data From URL: " + url)
     request.urlretrieve(url, output_path)
 
 
