@@ -1,19 +1,25 @@
+# """
+# Documentation of pageview format: https://wikitech.wikimedia.org/wiki/Analytics/Data_Lake/Traffic/Pageviews
+# """
+
 from urllib import request
 
 import airflow
 from airflow import DAG
 from airflow.operators.bash import BashOperator
 from airflow.operators.python import PythonOperator
+from airflow.providers.postgres.operators.postgres import PostgresOperator
 
 stock_sensor_dag = DAG(
     dag_id="stock_sensor",
     start_date=airflow.utils.dates.days_ago(1),
     schedule_interval="@hourly",
+    template_searchpath="/tmp",
     max_active_runs=1,
 )
 
 
-def _get_data(year, month, day, hour, output_path, **_):
+def _get_data(year, month, day, hour, output_path):
     url = (
         "https://dump.wikimedia.org/other/pageviews/"
         f"{year}/{year}-{month:0>2}/pageviews-{year}{month:0>2}{day:0>2}-{hour:0>2}0000.gz"
@@ -41,7 +47,7 @@ extract_gz = BashOperator(
 )
 
 
-def _fetch_pageviews(pagenames, execution_date, **_):
+def _fetch_pageviews(pagenames, execution_date):
     result = dict.fromkeys(pagenames, 0)
     with open("/tmp/wikipageviews", "r") as f:
         for line in f:
@@ -49,7 +55,7 @@ def _fetch_pageviews(pagenames, execution_date, **_):
             if domain_code == "en" and page_title in pagenames:
                 result[page_title] = view_counts
 
-    with open("/tmp/postgres_query.sql", "r") as f:
+    with open("/tmp/postgres_query.sql", "w") as f:
         for pagename, pageviewcount in result.items():
             f.write(
                 "INSERT INTO pageview_counts VALUES ("
@@ -57,14 +63,19 @@ def _fetch_pageviews(pagenames, execution_date, **_):
                 ");\n"
             )
 
-    print(result)
-
 
 fetch_pageviews = PythonOperator(
     task_id="fetch_pageviews",
     python_callable=_fetch_pageviews,
-    op_kwargs={"pagename": {"Google", "Amazon", "Apple", "Microsoft", "Facebook"}},
+    op_kwargs={"pagenames": {"Google", "Amazon", "Apple", "Microsoft", "Facebook"}},
     dag=stock_sensor_dag,
 )
 
-get_data >> extract_gz >> fetch_pageviews
+write_to_postgres = PostgresOperator(
+    task_id="write_to_postgres",
+    postgres_conn_id="my_postgres",
+    sql="postgres_query.sql",
+    dag=stock_sensor_dag,
+)
+
+get_data >> extract_gz >> fetch_pageviews >> write_to_postgres
