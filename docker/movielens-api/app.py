@@ -8,11 +8,17 @@ from werkzeug.security import generate_password_hash, check_password_hash
 DEFAULT_ITEMS_PER_PAGE = 100
 
 
+def _date_to_timestamp(date_str):
+    if date_str is None:
+        return None
+    return int(time.mktime(time.strptime(date_str, "%Y-%m-%d")))
+
+
 def _read_ratings(file_path):
-    ratings = pd.read_csv(file_path)
-    ratings = ratings.sample(n=100000, random_state=0)  # subsample dataset
-    ratings = ratings.sort_values(by=["timestamp", "userId", "movieId"])  # sorting for convenience
-    return ratings
+    ratings_from_csv = pd.read_csv(file_path)
+    ratings_sample = ratings_from_csv.sample(n=100000, random_state=0)  # subsample dataset
+    sorted_ratings = ratings_sample.sort_values(by=["timestamp", "userId", "movieId"])  # sorting for convenience
+    return sorted_ratings
 
 
 app = Flask(__name__)
@@ -22,22 +28,20 @@ auth = HTTPBasicAuth()
 users = {os.environ["API_USER"]: generate_password_hash(os.environ["API_PASSWORD"])}
 
 
+@auth.verify_password
 def verify_password(username, password):
     if username in users:
         return check_password_hash(users.get(username), password)
     return False
 
 
+@app.route("/")
 def hello():
     return "Hello from the Movie Rating API"
 
 
-def _date_to_timestamp(date_str):
-    if date_str is None:
-        return None
-    return int(time.mktime(time.strptime(date_str, "%Y-%m-%d")))
-
-
+@app.route("/ratings")
+@auth.login_required
 def ratings():
     """
     Get ratings from the movielens dataset
