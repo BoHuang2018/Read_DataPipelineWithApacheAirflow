@@ -10,6 +10,8 @@ from airflow import DAG
 # Set default values for environmental variables named as "MOVIELENS_HOST", "MOVIELENS_SCHEMA" and "MOVIELENS_PORT"
 from airflow.operators.python import PythonOperator
 
+from dags.custom.ranking import rank_movies_by_rating
+
 MOVIELENS_HOST = os.environ.get("MOVIELENS_HOST", "movielens")
 MOVIELENS_SCHEMA = os.environ.get("MOVIELENS_SCHEMA", "http")
 MOVIELENS_PORT = os.environ.get("MOVIELENS_PORT", "5000")
