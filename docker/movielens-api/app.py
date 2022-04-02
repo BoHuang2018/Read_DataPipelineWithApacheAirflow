@@ -1,28 +1,76 @@
+import logging
 import time
+from dataclasses import dataclass
 
 import pandas as pd
 from flask import Flask, request, jsonify
-from requests.auth import HTTPBasicAuth
+from flask_httpauth import HTTPBasicAuth
 from werkzeug.security import generate_password_hash, check_password_hash
 
 DEFAULT_ITEMS_PER_PAGE = 100
 
 
-def _date_to_timestamp(date_str):
+def _date_to_timestamp(date_str) -> int:
+    """
+    :param date_str: timestamp of date, in string, in format "%Y-%m-%d"
+    :return integer of the date_str
+    """
     if date_str is None:
-        return None
-    return int(time.mktime(time.strptime(date_str, "%Y-%m-%d")))
+        raise ValueError("argument data_str cannot be None")
+    try:
+        date_int = int(time.mktime(time.strptime(date_str, "%Y-%m-%d")))
+    except Exception as e:
+        logging.error("failed to get integer of date in format of %Y-%m-%d")
+        raise e
+    return date_int
 
 
-def _read_ratings(file_path):
-    ratings_from_csv = pd.read_csv(file_path)
-    ratings_sample = ratings_from_csv.sample(n=100000, random_state=0)  # subsample dataset
-    sorted_ratings = ratings_sample.sort_values(by=["timestamp", "userId", "movieId"])  # sorting for convenience
-    return sorted_ratings
+@dataclass(frozen=True)
+class SortedRatingsSampleFromCSV:
+    """
+    This class is to generate a sorted dataframe as sample through the following steps
+    1. Read ratings from a csv file and generate pandas DataFrame
+    2. Generate sorted sample of ratings in format of pandas DataFrame
+
+    :attr: csv_file_path: path of csv file containing ratings
+    :attr: number_of_samples: number of samples will be generated
+    :attr: random_state: random seed to reproduce random sample
+    :attr: sort_values: which columns the sorting will be implemented by
+    """
+    csv_file_path: str
+    number_of_samples: int
+    random_state: int
+    sort_values: list
+
+    def _read_ratings_from_csv(self) -> pd.DataFrame:
+        """
+        Step 1: Read ratings from a csv file and generate pandas DataFrame
+        """
+        try:
+            ratings_from_csv = pd.read_csv(self.csv_file_path)
+        except Exception as e:
+            logging.error(f"failed to read ratings from csv file in path: f{self.csv_file_path}")
+            raise e
+        return ratings_from_csv
+
+    @property
+    def generate_sorted_ratings_sample(self) -> pd.DataFrame:
+        """
+        Generate sorted sample of ratings in format of pandas DataFrame
+        """
+        ratings_from_csv = self._read_ratings_from_csv()
+        ratings_sample = ratings_from_csv.sample(n=self.number_of_samples, random_state=self.random_state)
+        sorted_ratings_sample = ratings_sample.sort_values(by=self.sort_values)
+        return sorted_ratings_sample
 
 
 app = Flask(__name__)
-app.config["rating"] = _read_ratings("/ratings.csv")
+
+rating_sample_generator = SortedRatingsSampleFromCSV(
+    csv_file_path="/ratings.csv", number_of_samples=100000, random_state=0,
+    sort_values=["timestamp", "userId", "movieId"])
+
+app.config["rating"] = rating_sample_generator.generate_sorted_ratings_sample
 
 auth = HTTPBasicAuth()
 users = {os.environ["API_USER"]: generate_password_hash(os.environ["API_PASSWORD"])}
