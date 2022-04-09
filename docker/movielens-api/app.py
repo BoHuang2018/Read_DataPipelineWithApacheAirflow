@@ -3,6 +3,9 @@ import time
 import os
 import pandas as pd
 
+from api_services.offset_and_limit_of_rating_sample_class import OffsetAndLimitOfRatingSample
+from api_services.start_end_date_of_rating_sample_class import StartEndDateOfRatingSample
+
 from flask import Flask, request, jsonify, Response
 from flask_httpauth import HTTPBasicAuth
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -14,11 +17,11 @@ DEFAULT_ITEMS_PER_PAGE = 100
 
 class RatingsApiController:
     """
-    This is controller of API to retrieve samples of ratings. It's property methods will
+    This is controller of API to retrieve samples of ratings. Its property methods will
     manage routes of API
 
     :attr: ratings_sample_generator: object implements protocol RatingsSampleGenerator,
-                                     to generate sorted samples of ratings in format of pandas DataFrame
+                                     to generate sorted samples of ratings in format of pandas.DataFrame
     :attr: start_end_date_timestamp_YMD: object implements protocol StartEndDateTimeStampYMD,
                                          to manage start date and end date of retrieved samples of ratings
     :attr: offset_and_limit_of_samples: object implements protocol OffsetAndLimitOfSamples,
@@ -141,9 +144,20 @@ def ratings():
     start_date_timestamp = _date_to_timestamp(request.args.get('start_date', None))
     end_date_timestamp = _date_to_timestamp(request.args.get('end_date', None))
 
-    offset = int(request.args.get('offset', 0))
-    limit = int(request.args.get('limit', DEFAULT_ITEMS_PER_PAGE))
+    # offset = int(request.args.get('offset', 0))
+    # limit = int(request.args.get('limit', DEFAULT_ITEMS_PER_PAGE))
 
+    start_end_date_of_rating_sample = StartEndDateOfRatingSample(
+
+    )
+
+    offset_and_limit_of_rating_sample = OffsetAndLimitOfRatingSample(
+        arg_offset_of_samples_key='offset',
+        arg_offset_of_samples_default_value=0,
+        arg_limit_of_samples_key='limit',
+        arg_limit_of_samples_default_value=DEFAULT_ITEMS_PER_PAGE
+    )
+    # TODO: to be continued
     ratings_df = app.config.get("ratings")
 
     if start_date_timestamp:
