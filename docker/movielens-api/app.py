@@ -71,7 +71,7 @@ def ratings():
     )
 
     ratings_api_controller = RatingsApiController(
-        generated_ratings_sample=app.config.get("ratings"),
+        generated_ratings_sample=app.config.get("rating"),
         start_end_date_timestamp_YMD=start_end_date_of_rating_sample,
         offset_and_limit_of_samples=offset_and_limit_of_rating_sample
     )

@@ -49,16 +49,17 @@ class RatingsApiController:
         self._get_limit_of_samples()
 
     def _get_start_date_timestamp_int(self):
-        self.start_date_timestamp = self.start_end_date_timestamp_YMD.start_date_to_timestamp()
+        self.start_date_timestamp = self.start_end_date_timestamp_YMD.start_date_to_timestamp
+        logging.info(f"got self.start_date_timestamp: {self.start_date_timestamp}")
 
     def _get_end_date_timestamp_int(self):
-        self.end_date_timestamp = self.start_end_date_timestamp_YMD.end_date_to_timestamp()
+        self.end_date_timestamp = self.start_end_date_timestamp_YMD.end_date_to_timestamp
 
     def _get_offset_of_samples(self):
-        self.offset_of_samples = self.offset_and_limit_of_samples.get_arg_offset_of_samples_value()
+        self.offset_of_samples = self.offset_and_limit_of_samples.get_arg_offset_of_samples_value
 
     def _get_limit_of_samples(self):
-        self.limit_of_samples = self.offset_and_limit_of_samples.get_arg_limit_of_samples_value()
+        self.limit_of_samples = self.offset_and_limit_of_samples.get_arg_limit_of_samples_value
 
     def _tailor_rating_samples_by_start_date(self):
         if self.start_date_timestamp != 0:
@@ -79,14 +80,22 @@ class RatingsApiController:
         try:
             samples_to_response = self.generated_ratings_sample.iloc[
                 self.offset_of_samples + self.limit_of_samples]
+            logging.info(f"type(samples_to_response) == {samples_to_response}")
         except Exception as e:
             logging.error("failed to extract ratings sample indexed by offset and limit")
             raise e
-        return jsonify(
-            {
-                "result": samples_to_response.to_dict(orient="record"),
-                "offset": self.offset_of_samples,
-                "limit": self.limit_of_samples,
-                "total": samples_to_response.shape[0],
-            }
-        )
+
+        try:
+            response = jsonify(
+                {
+                    "result": samples_to_response.to_dict(orient="record"),
+                    "offset": self.offset_of_samples,
+                    "limit": self.limit_of_samples,
+                    "total": samples_to_response.shape[0],
+                }
+            )
+        except TypeError as e:
+            raise TypeError(
+                f"failed to generate response by rating samples which in type of {type(samples_to_response)}"
+            )
+        return response
