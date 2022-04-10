@@ -94,8 +94,6 @@ class RatingsApiController:
             }
         )
 
-# TODO: apply the class RatingsApiController to router docker/movielens-api/app.py:121
-
 
 app = Flask(__name__)
 
@@ -141,14 +139,8 @@ def ratings():
     :return: directory
     """
 
-    start_date_timestamp = _date_to_timestamp(request.args.get('start_date', None))
-    end_date_timestamp = _date_to_timestamp(request.args.get('end_date', None))
-
-    # offset = int(request.args.get('offset', 0))
-    # limit = int(request.args.get('limit', DEFAULT_ITEMS_PER_PAGE))
-
     start_end_date_of_rating_sample = StartEndDateOfRatingSample(
-
+        arg_start_date_key='start_date', arg_end_date_key='end_date'
     )
 
     offset_and_limit_of_rating_sample = OffsetAndLimitOfRatingSample(
@@ -157,25 +149,16 @@ def ratings():
         arg_limit_of_samples_key='limit',
         arg_limit_of_samples_default_value=DEFAULT_ITEMS_PER_PAGE
     )
-    # TODO: to be continued
-    ratings_df = app.config.get("ratings")
 
-    if start_date_timestamp:
-        ratings_df = ratings_df.loc[ratings_df["timestamp"] >= start_date_timestamp]
-
-    if end_date_timestamp:
-        rating_df = ratings_df.loc[ratings_df["timestamp"] < end_date_timestamp]
-
-    subset = rating_df.iloc[offset: offset + limit]
-
-    return jsonify(
-        {
-            "result": subset.to_dict(orient="record"),
-            "offset": offset,
-            "limit": limit,
-            "total": ratings_df.shape[0],
-        }
+    ratings_api_controller = RatingsApiController(
+        generated_ratings_sample=app.config.get("ratings"),
+        start_end_date_timestamp_YMD=start_end_date_of_rating_sample,
+        offset_and_limit_of_samples=offset_and_limit_of_rating_sample
     )
+
+    rating_samples = ratings_api_controller.ratings_samples
+
+    return rating_samples
 
 
 if __name__ == "__main__":
