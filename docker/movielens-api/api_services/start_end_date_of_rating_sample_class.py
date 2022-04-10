@@ -49,6 +49,8 @@ class StartEndDateOfRatingSample:
     @property
     def start_date_to_timestamp(self) -> int:
         arg_start_date_value = self._get_arg_start_date_value()
+        if arg_start_date_value is None:
+            raise ValueError(f"value of argument {self.arg_start_date_key} cannot be None")
         return self._date_to_timestamp(arg_start_date_value)
 
     @property
