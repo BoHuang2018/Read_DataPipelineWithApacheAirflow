@@ -57,7 +57,10 @@ def ratings():
     """
 
     start_end_date_of_rating_sample = StartEndDateOfRatingSample(
-        arg_start_date_key='start_date', arg_end_date_key='end_date'
+        arg_start_date_key='start_date',
+        arg_start_date_default_value='2019-01-01',
+        arg_end_date_key='end_date',
+        arg_end_date_default_value='2019-01-02'
     )
 
     offset_and_limit_of_rating_sample = OffsetAndLimitOfRatingSample(
