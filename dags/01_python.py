@@ -16,7 +16,7 @@ MOVIELENS_HOST = os.environ.get("MOVIELENS_HOST", "movielens")
 MOVIELENS_SCHEMA = os.environ.get("MOVIELENS_SCHEMA", "http")
 MOVIELENS_PORT = os.environ.get("MOVIELENS_PORT", "5001")
 
-# Get values of environmental variables named as "MOVIELENS_USER" and "MOVIELENS_PASSWORD", set in docker-compose.yaml
+# Get values of environmental variables named as "MOVIELENS_USER" and "MOVIELENS_PASSWORD", set in api-compose.yaml
 MOVIELENS_USER = os.environ["MOVIELENS_USER"]
 MOVIELENS_PASSWORD = os.environ["MOVIELENS_PASSWORD"]
 
