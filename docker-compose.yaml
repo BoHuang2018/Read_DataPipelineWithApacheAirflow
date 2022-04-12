@@ -66,7 +66,7 @@ services:
     environment: *airflow_environment
     command: scheduler
   movielens:
-    build: api/movielens-api
+    build: api/movielens_api
     image: manning-airflow/movielens-api
     ports:
       - "5001:5001"
