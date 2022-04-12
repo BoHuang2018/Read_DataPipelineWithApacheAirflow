@@ -65,9 +65,16 @@ class TestOffsetAndLimitOfRatingSampleWithWrongAttributes(TestOffsetAndLimitOfRa
     """
     no_integer_values = ['1.1', '1.0', 'abc', 'True', 'False', '@#$123abc', '...']
 
-    def test_get_arg_offset_of_samples_value(self):
+    def test_get_arg_offset_of_samples_value_with_value_cannot_be_integer(self):
         for v in self.no_integer_values:
             with self.assertRaises(Exception) as exception_context:
                 with app.test_request_context(f'/ratings?offset={v}'):
                     self.assertEqual(100, self.offset_and_limit_of_rating_sample.get_arg_offset_of_samples_value)
+            self.assertRaises(Exception, exception_context)
+
+    def test_get_arg_limit_of_samples_value_with_value_cannot_be_integer(self):
+        for v in self.no_integer_values:
+            with self.assertRaises(Exception) as exception_context:
+                with app.test_request_context(f'/ratings?limit={v}'):
+                    self.assertEqual(100, self.offset_and_limit_of_rating_sample.get_arg_limit_of_samples_value)
             self.assertRaises(Exception, exception_context)
