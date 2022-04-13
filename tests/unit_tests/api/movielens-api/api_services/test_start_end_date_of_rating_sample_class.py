@@ -90,3 +90,5 @@ class TestStartEndDateOfRatingSampleWithProperAttributes(TestStartEndDateOfRatin
         """
         with app.test_request_context(f'ratings?'):
             self.assertEqual(1546383600, self.start_end_date_of_rating_sample.end_date_to_timestamp)
+
+# TODO: unit test for class StartEndDateOfRatingSample with wrong attributes
