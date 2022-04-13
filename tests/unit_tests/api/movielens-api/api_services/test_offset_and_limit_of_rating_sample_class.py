@@ -11,12 +11,11 @@ class TestOffsetAndLimitOfRatingSample(TestCase):
         arg_limit_of_samples_key = "limit"
         arg_limit_of_samples_default_value = 100
 
-        self.offset_and_limit_of_rating_sample = \
-            OffsetAndLimitOfRatingSample(
-                arg_offset_of_samples_key_test,
-                arg_offset_of_samples_default_value,
-                arg_limit_of_samples_key,
-                arg_limit_of_samples_default_value
+        self.offset_and_limit_of_rating_sample = OffsetAndLimitOfRatingSample(
+                arg_offset_of_samples_key=arg_offset_of_samples_key_test,
+                arg_offset_of_samples_default_value=arg_offset_of_samples_default_value,
+                arg_limit_of_samples_key=arg_limit_of_samples_key,
+                arg_limit_of_samples_default_value=arg_limit_of_samples_default_value
             )
 
 
