@@ -22,7 +22,7 @@ class TestOffsetAndLimitOfRatingSample(TestCase):
 app = flask.Flask(__name__)
 
 
-class TestOffsetAndLimitOfRatingSampleMethodGetArgOffsetOfSamplesValue(TestOffsetAndLimitOfRatingSample):
+class TestOffsetAndLimitOfRatingSampleWithProperAttributes(TestOffsetAndLimitOfRatingSample):
     def test_get_arg_offset_of_samples_value(self):
         """
         Test the method with given argument 'offset'
