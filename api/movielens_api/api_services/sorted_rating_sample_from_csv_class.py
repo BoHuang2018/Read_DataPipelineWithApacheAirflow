@@ -23,7 +23,7 @@ class SortedRatingsSampleFromCSV:
 
     def _read_ratings_from_csv(self) -> pd.DataFrame:
         """
-        Step 1: Read ratings from a csv file and generate pandas DataFrame
+        Step 1. Read ratings from a csv file and generate pandas DataFrame
         """
         try:
             ratings_from_csv = pd.read_csv(self.csv_file_path)
@@ -36,7 +36,7 @@ class SortedRatingsSampleFromCSV:
     @property
     def generate_sorted_ratings_sample(self) -> pd.DataFrame:
         """
-        Generate sorted sample of ratings in format of pandas DataFrame
+        Step 2. Generate sorted sample of ratings in format of pandas DataFrame
         """
         ratings_from_csv = self._read_ratings_from_csv()
         ratings_sample = ratings_from_csv.sample(n=self.number_of_samples, random_state=self.random_state)
