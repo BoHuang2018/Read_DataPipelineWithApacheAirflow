@@ -1,3 +1,5 @@
+import logging
+from typing import List
 from unittest import TestCase
 
 import flask
@@ -34,8 +36,8 @@ class TestStartEndDateOfRatingSampleWithProperAttributes(TestStartEndDateOfRatin
     def test_date_to_timestamp(self):
         for dd in (self.start_dates_str_int_dict, self.end_dates_str_int_dict):
             for k, v in dd.items():
-                date_integer = self.start_end_date_of_rating_sample._date_to_timestamp(k)
-                self.assertEqual(v, date_integer)
+                date_timestamp_integer = self.start_end_date_of_rating_sample._date_to_timestamp(k)
+                self.assertEqual(v, date_timestamp_integer)
 
     def test_get_arg_start_date_value(self):
         """
@@ -100,11 +102,30 @@ class TestStartEndDateOfRatingSampleWithWrongAttributes(TestStartEndDateOfRating
         1.2 Month takes date's position while date takes month's position, for example '2019-02-01'
             ( correct date: '2019-01-02', i.e. 02.Jan.2019)
         1.3 Lacking year, month or date
-    2. Syntax error in string format of date: Characters, decimals or special characters
+    2. Dates do not existed, for example: '2019-02-29', '2021-01-31', '2020-01-32', '2018-13-01'
+    3. Syntax error in string format of date: Characters, decimals, blank space(s) or special characters
     """
     dates_with_errors = {
-        "01-01-2019": 1546297200,  # correct version: 2019-01-01 i.e. 01.Jan.2019
-        "2019-01-31": 1548889200,
-        "2020-02-29": 1582930800,
-        "2022-04-12": 1649714400
+        "01-01-2019": 1546297200,  # correct version: 2019-01-01 i.e. 01.Jan.2019 --> point 1.1
+        "2022-12-04": 1649714400,  # correct version: 2022-04-12 i.e. 12.Apr.2022 --> point 1.2
+
+        "2019--31": 1548889200,  # correct version: 2019-01-31 i.e. 31.Jan.2019 --> point 1.3
+        "2019-01-": 1548889200,  # correct version: 2019-01-31 i.e. 31.Jan.2019 --> point 1.3
+
+        "2020-feb-29": 1582930800,  # correct version: 2020-02-29 i.e. 29.Feb.2019 --> point 3
+        "2020-#$-29": 1582930800,  # correct version: 2020-02-29 i.e. 29.Feb.2019  --> point 3
+        "2020-02-  ": 1582930800  # correct version: 2020-02-29 i.e. 29.Feb.2019 --> point 3
     }
+
+    not_existed_dates: List[str] = ['2019-02-29', '2021-01-31', '2020-01-32', '2018-13-01']
+
+    def test_date_to_timestamp_with_wrong_attributes(self):
+        for date_string in self.dates_with_errors.keys():
+            #with self.assertRaises(Exception):
+                #self.start_end_date_of_rating_sample._date_to_timestamp(date_string)
+            #self.assertRaises(Exception, exception_context)
+            print(f"date_string={date_string}")
+            try:
+                self.start_end_date_of_rating_sample._date_to_timestamp(date_string)
+            except Exception:
+                self.assertRaises(Exception)
