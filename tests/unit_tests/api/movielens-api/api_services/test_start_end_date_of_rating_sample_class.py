@@ -107,8 +107,6 @@ class TestStartEndDateOfRatingSampleWithWrongAttributes(TestStartEndDateOfRating
     """
     dates_with_errors = {
         "01-01-2019": 1546297200,  # correct version: 2019-01-01 i.e. 01.Jan.2019 --> point 1.1
-        "2022-12-04": 1649714400,  # correct version: 2022-04-12 i.e. 12.Apr.2022 --> point 1.2
-
         "2019--31": 1548889200,  # correct version: 2019-01-31 i.e. 31.Jan.2019 --> point 1.3
         "2019-01-": 1548889200,  # correct version: 2019-01-31 i.e. 31.Jan.2019 --> point 1.3
 
@@ -116,16 +114,13 @@ class TestStartEndDateOfRatingSampleWithWrongAttributes(TestStartEndDateOfRating
         "2020-#$-29": 1582930800,  # correct version: 2020-02-29 i.e. 29.Feb.2019  --> point 3
         "2020-02-  ": 1582930800  # correct version: 2020-02-29 i.e. 29.Feb.2019 --> point 3
     }
-
+    reversed_month_date_position = {
+        "2022-12-04": 1649714400  # correct version: 2022-04-12 i.e. 12.Apr.2022 --> point 1.2
+    }
     not_existed_dates: List[str] = ['2019-02-29', '2021-01-31', '2020-01-32', '2018-13-01']
 
     def test_date_to_timestamp_with_wrong_attributes(self):
         for date_string in self.dates_with_errors.keys():
-            #with self.assertRaises(Exception):
-                #self.start_end_date_of_rating_sample._date_to_timestamp(date_string)
-            #self.assertRaises(Exception, exception_context)
-            print(f"date_string={date_string}")
-            try:
+            with self.assertRaises(Exception):
                 self.start_end_date_of_rating_sample._date_to_timestamp(date_string)
-            except Exception:
-                self.assertRaises(Exception)
+            self.assertRaises(Exception)
