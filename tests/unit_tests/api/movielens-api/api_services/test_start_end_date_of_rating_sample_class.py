@@ -91,4 +91,20 @@ class TestStartEndDateOfRatingSampleWithProperAttributes(TestStartEndDateOfRatin
         with app.test_request_context(f'ratings?'):
             self.assertEqual(1546383600, self.start_end_date_of_rating_sample.end_date_to_timestamp)
 
-# TODO: unit test for class StartEndDateOfRatingSample with wrong attributes
+
+class TestStartEndDateOfRatingSampleWithWrongAttributes(TestStartEndDateOfRatingSample):
+    """
+    Test the methods will raise exceptions and logs when the attributes are wrong:
+    1. String value of 'start_date' or 'end_date' is not in format of "%Y-%m-%d":
+        1.1 Year is not in correct position, for example '01-02-2019' ( correct date: '2019-01-02')
+        1.2 Month takes date's position while date takes month's position, for example '2019-02-01'
+            ( correct date: '2019-01-02', i.e. 02.Jan.2019)
+        1.3 Lacking year, month or date
+    2. Syntax error in string format of date: Characters, decimals or special characters
+    """
+    dates_with_errors = {
+        "01-01-2019": 1546297200,  # correct version: 2019-01-01 i.e. 01.Jan.2019
+        "2019-01-31": 1548889200,
+        "2020-02-29": 1582930800,
+        "2022-04-12": 1649714400
+    }
