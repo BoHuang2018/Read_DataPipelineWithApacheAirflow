@@ -28,7 +28,8 @@ class SortedRatingsSampleFromCSV:
         try:
             ratings_from_csv = pd.read_csv(self.csv_file_path)
         except Exception as e:
-            logging.error(f"failed to read ratings from csv file in path: f{self.csv_file_path}")
+            logging.error(
+                f"failed to read ratings from csv file in path: f{self.csv_file_path} by unknown error {e=}")
             raise e
         return ratings_from_csv
 
