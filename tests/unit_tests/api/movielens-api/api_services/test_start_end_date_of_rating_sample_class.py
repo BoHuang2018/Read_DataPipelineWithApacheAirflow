@@ -117,12 +117,19 @@ class TestStartEndDateOfRatingSampleWithWrongAttributes(TestStartEndDateOfRating
     reversed_month_date_position = {
         "2022-12-04": 1649714400  # correct version: 2022-04-12 i.e. 12.Apr.2022 --> point 1.2
     }
-    not_existed_dates: List[str] = ['2019-02-29', '2021-01-31', '2020-01-32', '2018-13-01']  # point 2
+    not_existed_dates: List[str] = ['2019-02-29', '2021-11-31', '2020-01-32', '2018-13-01']  # point 2
 
     def test_date_to_timestamp_with_wrong_attributes(self):
         for date_string in self.dates_with_errors.keys():
-            with self.assertRaises(Exception) as context_exception:
+            with self.assertRaises(Exception) as context:
                 self.start_end_date_of_rating_sample._date_to_timestamp(date_string)
-            self.assertEqual(str(context_exception.exception),
+            self.assertEqual(str(context.exception),
                              f"failed to get integer of date={date_string} in format of %Y-%m-%d")
-            self.assertEqual(type(context_exception.exception).__name__, 'ValueError')
+            self.assertEqual(type(context.exception).__name__, 'ValueError')
+
+        for date_string in self.not_existed_dates:
+            with self.assertRaises(Exception) as context:
+                self.start_end_date_of_rating_sample._date_to_timestamp(date_string)
+            self.assertEqual(str(context.exception),
+                             f"failed to get integer of date={date_string} in format of %Y-%m-%d")
+            self.assertEqual(type(context.exception).__name__, 'ValueError')
