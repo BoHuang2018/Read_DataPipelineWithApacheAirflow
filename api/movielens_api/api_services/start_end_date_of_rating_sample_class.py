@@ -27,8 +27,6 @@ class StartEndDateOfRatingSample:
         :param date_str: timestamp of date, in string, in format "%Y-%m-%d"
         :return integer of the date_str
         """
-        if date_str is None:
-            raise ValueError("argument data_str cannot be None")
         try:
             date_int = int(time.mktime(time.strptime(date_str, "%Y-%m-%d")))
         except ValueError:
