@@ -40,7 +40,9 @@ class StartEndDateOfRatingSample:
         try:
             arg_start_date_value = request.args.get(self.arg_start_date_key, self.arg_start_date_default_value)
         except Exception as e:
-            logging.error(f"failed to get value of argument of {self.arg_start_date_key}")
+            logging.error(
+                f"failed to get value of argument of {self.arg_start_date_key}, because of unexpected error: {e=}"
+            )
             raise e
         return arg_start_date_value
 
@@ -48,15 +50,15 @@ class StartEndDateOfRatingSample:
         try:
             arg_end_date_value = request.args.get(self.arg_end_date_key, self.arg_end_date_default_value)
         except Exception as e:
-            logging.error(f"failed to get value of argument of {self.arg_end_date_key}")
+            logging.error(
+                f"failed to get value of argument of {self.arg_end_date_key}, because of unexpected error: {e=}"
+            )
             raise e
         return arg_end_date_value
 
     @property
     def start_date_to_timestamp(self) -> int:
         arg_start_date_value = self._get_arg_start_date_value()
-        if arg_start_date_value is None:
-            raise ValueError(f"value of argument {self.arg_start_date_key} cannot be None")
         return self._date_to_timestamp(arg_start_date_value)
 
     @property
