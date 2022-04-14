@@ -31,8 +31,10 @@ class StartEndDateOfRatingSample:
             raise ValueError("argument data_str cannot be None")
         try:
             date_int = int(time.mktime(time.strptime(date_str, "%Y-%m-%d")))
+        except ValueError:
+            raise ValueError(f"failed to get integer of date={date_str} in format of %Y-%m-%d")
         except Exception as e:
-            logging.error("failed to get integer of date in format of %Y-%m-%d")
+            logging.error(f"failed to get integer of date in format of %Y-%m-%d, because of unexpected error: {e=}")
             raise e
         return date_int
 
