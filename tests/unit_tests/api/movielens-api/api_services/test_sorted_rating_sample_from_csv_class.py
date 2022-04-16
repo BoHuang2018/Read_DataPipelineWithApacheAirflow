@@ -108,7 +108,7 @@ class TestSortedRatingsSampleFromCSVWrongAttributes(TestCase):
                 str(context.exception), f"failed to read csv file because of problem of path: {tc.csv_file_path}"
             )
 
-    def test_generate_sorted_ratings_sample(self):
+    def test_generate_sorted_ratings_sample_with_wrong_sort_values(self):
         @dataclass
         class TestCaseWithWrongAttrs:
             csv_file_path: str
@@ -157,3 +157,6 @@ class TestSortedRatingsSampleFromCSVWrongAttributes(TestCase):
                 _ = self.sorted_rating_sample_from_csv.generate_sorted_ratings_sample
             self.assertEqual(type(context.exception).__name__, exception_types[i])
             self.assertEqual(str(context.exception), exception_messages[i])
+
+    # TODO: one more unit test function
+    #   def test_generate_sorted_ratings_sample_with_wrong_number_of_samples
