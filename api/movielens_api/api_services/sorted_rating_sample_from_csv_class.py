@@ -27,18 +27,42 @@ class SortedRatingsSampleFromCSV:
         """
         try:
             ratings_from_csv = pd.read_csv(self.csv_file_path)
+        except FileNotFoundError:
+            raise FileNotFoundError(f"failed to read csv file because of problem of path: {self.csv_file_path}")
         except Exception as e:
             logging.error(
-                f"failed to read ratings from csv file in path: f{self.csv_file_path} by unknown error {e=}")
+                f"failed to read ratings from csv file in path: {self.csv_file_path} by unexpected error {e=}")
             raise e
         return ratings_from_csv
+
+    def _check_sort_values_list(self):
+        if len(self.sort_values) == 0:
+            raise ValueError("the attribute, sort_values, cannot be an empty list")
+        for v in self.sort_values:
+            if not isinstance(v, str):
+                raise ValueError(f"the attribute, sort_values, must be list of strings, "
+                                 f"but the element: {v} is in type of {type(v).__name__}")
+        return
 
     @property
     def generate_sorted_ratings_sample(self) -> pd.DataFrame:
         """
         Step 2. Generate sorted sample of ratings in format of pandas DataFrame
         """
+        self._check_sort_values_list()
         ratings_from_csv = self._read_ratings_from_csv()
-        ratings_sample = ratings_from_csv.sample(n=self.number_of_samples, random_state=self.random_state)
-        sorted_ratings_sample = ratings_sample.sort_values(by=self.sort_values)
+        try:
+            ratings_sample = ratings_from_csv.sample(n=self.number_of_samples, random_state=self.random_state)
+            sorted_ratings_sample = ratings_sample.sort_values(by=self.sort_values)
+        except KeyError:
+            raise KeyError(
+                f"failed to generate sorted rating sample because attribute, sort_values: {self.sort_values}, "
+                f"involve element(s) cannot be found in Dataframe's columns"
+            )
+        except Exception as e:
+            logging.error(
+                f"failed to generate sorted rating sample from csv file in path: {self.csv_file_path} "
+                f"by unexpected error {e=}"
+            )
+            raise e
         return sorted_ratings_sample
