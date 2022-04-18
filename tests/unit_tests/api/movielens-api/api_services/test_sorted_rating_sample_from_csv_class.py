@@ -58,8 +58,8 @@ class TestSortedRatingsSampleFromCSVWrongAttributes(TestCase):
         1.2. path is empty string: ""
         1.3. path is black space in string: " "
     2. number_of_samples_wrong:
-        2.1. not in type of integer
-        2.2. bigger that number of rows in the csv file (1200634 rows). It is set as 1300000.
+        2.1. bigger that number of rows in the csv file (1200634 rows). It is set as 1300000.
+        2.2. negative integer, like -1
     3. random_state_wrong: Not in type of integer
     4. sort_values_wrong:
         4.1. Empty list
@@ -67,7 +67,14 @@ class TestSortedRatingsSampleFromCSVWrongAttributes(TestCase):
         4.3. At least one element are not found in the related dataframe's columns ( userId, movieId, rating, timestamp)
     """
 
-    def test_read_ratings_from_csv(self):
+    def test_read_ratings_from_csv_in_wrong_path(self):
+        """
+        Initialize an object of class SortedRatingsSampleFromCSV with wrong attributes:
+        1. csv_file_path_wrong:
+            1.1. a path with a folder which does not exist
+            1.2. path is empty string: ""
+            1.3. path is black space in string: " "
+        """
         @dataclass
         class TestCaseWithWrongAttrs:
             csv_file_path: str
@@ -158,5 +165,33 @@ class TestSortedRatingsSampleFromCSVWrongAttributes(TestCase):
             self.assertEqual(type(context.exception).__name__, exception_types[i])
             self.assertEqual(str(context.exception), exception_messages[i])
 
-    # TODO: one more unit test function
-    #   def test_generate_sorted_ratings_sample_with_wrong_number_of_samples
+    def test_generate_sorted_ratings_sample_with_wrong_number_of_samples(self):
+        """
+        Initialize an object of class SortedRatingsSampleFromCSV with wrong attributes:
+        2. number_of_samples_wrong:
+            2.1. bigger that number of rows in the csv file (1200634 rows). It is set as 1300000.
+            2.2. negative integer, like -1
+        """
+        @dataclass
+        class TestCaseWithWrongAttrs:
+            csv_file_path: str
+            number_of_samples: int
+            random_state: int
+            sort_values: list
+
+        test_cases_with_wrong_number_of_samples = [
+            TestCaseWithWrongAttrs(
+                csv_file_path="../ratings_copy_for_test.csv",
+                number_of_samples=1300000,
+                random_state=0,
+                sort_values=["timestamp", "userId", "movieId"]
+            ),
+            TestCaseWithWrongAttrs(
+                csv_file_path="../ratings_copy_for_test.csv",
+                number_of_samples=-1,
+                random_state=0,
+                sort_values=["timestamp", "userId", "movieId"]
+            ),
+        ]
+        for tc in test_cases_with_wrong_number_of_samples:
+
