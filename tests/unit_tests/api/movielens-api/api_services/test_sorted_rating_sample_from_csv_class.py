@@ -112,7 +112,8 @@ class TestSortedRatingsSampleFromCSVWrongAttributes(TestCase):
             with self.assertRaises(Exception) as context:
                 self.sorted_rating_sample_from_csv._read_ratings_from_csv()
             self.assertEqual(
-                str(context.exception), f"failed to read csv file because of problem of path: {tc.csv_file_path}"
+                str(context.exception),
+                f"failed to read csv file because of problem of path: {tc.csv_file_path}"
             )
 
     def test_generate_sorted_ratings_sample_with_wrong_sort_values(self):
@@ -194,4 +195,16 @@ class TestSortedRatingsSampleFromCSVWrongAttributes(TestCase):
             ),
         ]
         for tc in test_cases_with_wrong_number_of_samples:
+            self.sorted_rating_sample_from_csv = SortedRatingsSampleFromCSV(
+                csv_file_path=tc.csv_file_path,
+                number_of_samples=tc.number_of_samples,
+                random_state=tc.random_state,
+                sort_values=tc.sort_values
+            )
+            with self.assertRaises(Exception) as context:
+                self.sorted_rating_sample_from_csv.generate_sorted_ratings_sample
+            self.assertEqual(
+                str(context.exception),
+                f"failed to generated sorted rating samples in number of {tc.number_of_samples}"
+            )
 

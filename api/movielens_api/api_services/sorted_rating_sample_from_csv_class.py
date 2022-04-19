@@ -59,6 +59,10 @@ class SortedRatingsSampleFromCSV:
                 f"failed to generate sorted rating sample because attribute, sort_values: {self.sort_values}, "
                 f"involve element(s) cannot be found in Dataframe's columns"
             )
+        except ValueError:
+            raise ValueError(
+                f"failed to generated sorted rating samples in number of {self.number_of_samples}"
+            )
         except Exception as e:
             logging.error(
                 f"failed to generate sorted rating sample from csv file in path: {self.csv_file_path} "
